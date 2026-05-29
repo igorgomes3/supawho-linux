@@ -1,7 +1,7 @@
 #!/bin/bash
 # supawho - Manage multiple Supabase accounts securely via macOS Keychain
 
-VERSION="1.3.0"
+VERSION="1.3.1"
 KEYCHAIN_SERVICE="supabase-cli-accounts"
 KEYCHAIN_INDEX_KEY="_account_list"
 
@@ -46,8 +46,7 @@ cmd_guided_add() {
   
   cmd_add "$name" "$token"
   
-  local login_prompt="\n  Login now as '$name'? [Y/n] "
-  read -rp "$login_prompt" confirm
+  read -rp $'\n  '"Login now as '$name'? [Y/n] " confirm
   if [[ -z "$confirm" || "$confirm" =~ ^[Yy]$ ]]; then
     cmd_use "$name"
   fi
@@ -194,8 +193,7 @@ cmd_interactive() {
     echo "  $((i + 1))) ${accounts[$i]}"
   done
   
-  local select_prompt="\nEnter number (1-${#accounts[@]}): "
-  read -rp "$select_prompt" choice
+  read -rp $'\nEnter number (1-'"${#accounts[@]}"'): ' choice
 
   if [[ -z "$choice" || "$choice" -lt 1 || "$choice" -gt "${#accounts[@]}" ]] 2>/dev/null; then
     echo "Invalid selection."

@@ -12,13 +12,12 @@
 </table>
 
 Switch between multiple **Supabase** accounts in seconds.<br>
-Tokens are stored securely in **macOS Keychain**.
+Tokens are stored securely in **Linux GNOME Keyring**.
 
 <br>
 
 [![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=for-the-badge&logo=supabase&logoColor=fff)](#)
-[![macOS](https://img.shields.io/badge/macOS-000000?style=for-the-badge&logo=apple&logoColor=fff)](#)
-[![Homebrew](https://img.shields.io/badge/Homebrew-FBB040?style=for-the-badge&logo=homebrew&logoColor=fff)](#-installation)
+[![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)](#)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
 </div>
@@ -27,43 +26,16 @@ Tokens are stored securely in **macOS Keychain**.
 
 ## 🍺 Installation
 
+First, ensure you have the `secret-tool` package installed:
 ```bash
-brew install EliaTolin/tap/supawho
+sudo apt install libsecret-tools -y
 ```
 
-<details>
-<summary>🔧 Other installation methods</summary>
-
-<br>
-
-**Shell** (one-liner):
-
+Then download the `supawho` binary and make it executable:
 ```bash
-curl -fsSL https://raw.githubusercontent.com/EliaTolin/supawho/main/install.sh | bash
+sudo wget -qO /usr/local/bin/supawho https://raw.githubusercontent.com/igorgomes3/supawho-linux/main/supawho
+sudo chmod +x /usr/local/bin/supawho
 ```
-
-Install a specific version:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/EliaTolin/supawho/main/install.sh | bash -s 1.0.0
-```
-
-**Manual:**
-
-```bash
-git clone git@github.com:EliaTolin/supawho.git
-chmod +x supawho/supawho
-```
-
-Add to your shell config (`~/.zshrc` or `~/.bashrc`):
-
-```bash
-echo 'alias supawho="/path/to/supawho/supawho"' >> ~/.zshrc
-source ~/.zshrc
-```
-
-</details>
-
 <br>
 
 ## 🔑 Getting your Supabase Access Token
@@ -117,7 +89,7 @@ Enter number (1-2):
 
 ## 🔒 Why is it secure?
 
-Your tokens **never touch the filesystem**. They are stored exclusively in the **macOS Keychain**, the same encrypted vault that Safari and the system use for passwords and certificates.
+Your tokens **never touch the filesystem**. They are stored exclusively in the **Linux GNOME Keyring**, the same encrypted vault that your system uses for passwords and certificates.
 
 | | supawho | Plain text files |
 |---|:---:|:---:|
@@ -130,11 +102,11 @@ Your tokens **never touch the filesystem**. They are stored exclusively in the *
 
 ## 📋 Requirements
 
-- **macOS** — uses the `security` command for Keychain access
-- [**Supabase CLI**](https://supabase.com/docs/guides/cli) — installed and available in `$PATH`
+- **Linux** (Ubuntu, Pop!_OS, Debian, etc.) — requires `libsecret-tools` installed to access the GNOME Keyring via `secret-tool`
+- [**Supabase CLI**](https://supabase.com/docs/guides/cli) or **npx supabase**
 
 <br>
 
 ## 📄 License
 
-[MIT](LICENSE) — Made with 💚 by [Elia Tolin](https://github.com/EliaTolin)
+[MIT](LICENSE) — Adapted for Linux by [Igor Gomes](https://github.com/igorgomes3). Original macOS version made with 💚 by [Elia Tolin](https://github.com/EliaTolin)

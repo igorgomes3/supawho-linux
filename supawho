@@ -1,5 +1,5 @@
 #!/bin/bash
-# supawho - Manage multiple Supabase accounts securely via macOS Keychain
+# supawho - Manage multiple Supabase accounts securely via GNOME Keyring (Linux)
 
 VERSION="1.3.1"
 KEYCHAIN_SERVICE="supabase-cli-accounts"
@@ -18,18 +18,18 @@ show_banner() {
 # --- Helpers ---
 
 get_account_list() {
-  security find-generic-password -s "$KEYCHAIN_SERVICE" -a "$KEYCHAIN_INDEX_KEY" -w 2>/dev/null
+  secret-tool lookup service "$KEYCHAIN_SERVICE" account "$KEYCHAIN_INDEX_KEY" 2>/dev/null
 }
 
 save_account_list() {
   local list="$1"
-  security delete-generic-password -s "$KEYCHAIN_SERVICE" -a "$KEYCHAIN_INDEX_KEY" 2>/dev/null
-  security add-generic-password -s "$KEYCHAIN_SERVICE" -a "$KEYCHAIN_INDEX_KEY" -w "$list"
+  secret-tool clear service "$KEYCHAIN_SERVICE" account "$KEYCHAIN_INDEX_KEY" 2>/dev/null
+  echo -n "$list" | secret-tool store --label="Supabase CLI: _account_list" service "$KEYCHAIN_SERVICE" account "$KEYCHAIN_INDEX_KEY"
 }
 
 get_token() {
   local name="$1"
-  security find-generic-password -s "$KEYCHAIN_SERVICE" -a "$name" -w 2>/dev/null
+  secret-tool lookup service "$KEYCHAIN_SERVICE" account "$name" 2>/dev/null
 }
 
 # --- Commands ---
@@ -62,8 +62,8 @@ cmd_add() {
     exit 0
   fi
 
-  security delete-generic-password -s "$KEYCHAIN_SERVICE" -a "$name" 2>/dev/null
-  security add-generic-password -s "$KEYCHAIN_SERVICE" -a "$name" -w "$token"
+  secret-tool clear service "$KEYCHAIN_SERVICE" account "$name" 2>/dev/null
+  echo -n "$token" | secret-tool store --label="Supabase CLI: $name" service "$KEYCHAIN_SERVICE" account "$name"
 
   local list
   list=$(get_account_list)
@@ -121,9 +121,9 @@ cmd_rename() {
     exit 1
   fi
 
-  security delete-generic-password -s "$KEYCHAIN_SERVICE" -a "$new_name" 2>/dev/null
-  security add-generic-password -s "$KEYCHAIN_SERVICE" -a "$new_name" -w "$token"
-  security delete-generic-password -s "$KEYCHAIN_SERVICE" -a "$old_name" 2>/dev/null
+  secret-tool clear service "$KEYCHAIN_SERVICE" account "$new_name" 2>/dev/null
+  echo -n "$token" | secret-tool store --label="Supabase CLI: $new_name" service "$KEYCHAIN_SERVICE" account "$new_name"
+  secret-tool clear service "$KEYCHAIN_SERVICE" account "$old_name" 2>/dev/null
 
   local list
   list=$(get_account_list)
@@ -137,7 +137,7 @@ cmd_remove() {
   local name="$1"
   [[ -z "$name" ]] && echo "Usage: supawho remove <name>" && exit 1
 
-  security delete-generic-password -s "$KEYCHAIN_SERVICE" -a "$name" 2>/dev/null
+  secret-tool clear service "$KEYCHAIN_SERVICE" account "$name" 2>/dev/null
 
   local list
   list=$(get_account_list)
@@ -174,7 +174,7 @@ cmd_use() {
   fi
 
   echo "Logging in as '$name'..."
-  supabase login --token "$token"
+  npx supabase login --token "$token"
   echo "Logged in as '$name'."
 }
 
@@ -222,7 +222,7 @@ case "${1:-}" in
     echo "  supawho list                   List saved accounts"
     echo "  supawho use <name>             Login with specific account"
     echo -e "  supawho version                Show version\n"
-    echo "Tokens are stored securely in macOS Keychain."
+    echo "Tokens are stored securely in Linux GNOME Keyring."
     ;;
   "")              cmd_interactive ;;
   *)               echo "Unknown command: $1"
